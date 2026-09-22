@@ -9,7 +9,7 @@
 
 const GViz = (() => {
   function buildUrl(sheetName) {
-    const base = `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+    const base = `https://docs.google.com/spreadsheets/d/1FAbcl_l4uxs7KlGFuKRABs_C5HM-qvAiOcPmF-4DqZk/edit?usp=sharing`;
     return sheetName ? `${base}&sheet=${encodeURIComponent(sheetName)}` : base;
   }
 
