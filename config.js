@@ -53,13 +53,13 @@ const CONFIG = {
 
   // Warna aksen tiap kategori (dipakai di kartu & grafik)
   CATEGORY_COLORS: {
-    botol: "788734642",
-    thermoCup: "2147366130",
-    thermoTray: "155439270",
-    printing: "393546215",
-    extruder: "1334539886",
-    extruderCS: "1334539886",
-    extruderDiamat: "1334539886",
+    botol: "#F2A93B",
+    thermoCup: "#4FD1A5",
+    thermoTray: "#5AA9E6",
+    printing: "#C77DFF",
+    extruder: "#E85D5D",
+    extruderCS: "#E85D5D",
+    extruderDiamat: "#F27059",
   },
 
   // Refresh otomatis (milidetik). Set 0 untuk mematikan.
