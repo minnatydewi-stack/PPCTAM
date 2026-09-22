@@ -43,12 +43,12 @@ const CONFIG = {
   // Definisi 6 panel yang muncul di tiap sheet harian (1-31), dipakai untuk
   // mencocokkan judul section saat membaca data. Urutan tidak berpengaruh.
   DAILY_SECTIONS: [
-    { key: "botol", match: ["hasil prod botol"], label: "Botol", unit: "" },
-    { key: "thermoCup", match: ["thermo (cup)", "thermo cup"], label: "Thermo Cup", unit: "" },
-    { key: "thermoTray", match: ["thermo (tray)", "thermo tray"], label: "Thermo Tray & Lid", unit: "" },
-    { key: "printing", match: ["hasil prod printing"], label: "Printing", unit: "" },
-    { key: "extruderCS", match: ["extruder cs", "(e1)"], label: "Extruder CS (E1)", unit: "" },
-    { key: "extruderDiamat", match: ["extruder diamat", "(e2)"], label: "Extruder Diamat (E2)", unit: "" },
+    { key: "botol", match: ["hasil prod botol"], label: "Rekap Botol", unit: "" },
+    { key: "thermoCup", match: ["thermo (cup)", "thermo cup"], label: "Rekap Thermo Cup", unit: "" },
+    { key: "thermoTray", match: ["thermo (tray)", "thermo tray"], label: "Rekap Thermo Tray & Lid", unit: "" },
+    { key: "printing", match: ["hasil prod printing"], label: "Rekap Printing", unit: "" },
+    { key: "extruderCS", match: ["extruder cs", "(e1)"], label: "Rekap Extruder", unit: "" },
+    { key: "extruderDiamat", match: ["extruder diamat", "(e2)"], label: "Rekap Extruder", unit: "" },
   ],
 
   // Warna aksen tiap kategori (dipakai di kartu & grafik)
