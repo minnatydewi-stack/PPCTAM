@@ -7,8 +7,8 @@
  * -------------------------------------------------------------
  */
 
-const GViz = (() => {
-  function CONFIG.1FAbcl_l4uxs7KlGFuKRABs_C5HM-qvAiOcPmF-4DqZk gviz/tq?tqx=out:json
+const GViz = gviz/tq?tqx=out:json
+  function CONFIG.1FAbcl_l4uxs7KlGFuKRABs_C5HM-qvAiOcPmF-4DqZk 
     const base = `https://docs.google.com/spreadsheets/d/1FAbcl_l4uxs7KlGFuKRABs_C5HM-qvAiOcPmF-4DqZk/edit?usp=sharing`;
     return sheetName ? `${base}&sheet=${encodeURIComponent(sheetName)}` : base;
   }
