@@ -35,7 +35,6 @@ const CONFIG = {
   // file ini ("REKAP GRAND TOTAL PRODUKSI"). Kalau ternyata salah ambil,
   // isi nama tab yang benar di sini, misalnya "Grand Total".
   GRAND_TOTAL_SHEET: "",
-  Rekap Botol: "C2; B2; D2; E2"
 
   // Nama tab harian mengikuti angka tanggal: "1", "2", ... "31"
   DAILY_SHEET_PREFIX: "",
