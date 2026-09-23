@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rekap Produksi — Dashboard</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161922; --panel2:#1c2029; --border:#2a2f3a;
+  --text:#e8eaf0; --muted:#8b93a7; --accent:#4f8cff; --green:#3ecf8e; --amber:#f5b942;
+  box-sizing:border-box;
+}
+*{box-sizing:inherit;margin:0;padding:0}
+body{
+  font-family:-apple-system,"Segoe UI",Arial,sans-serif;
+  background:var(--bg); color:var(--text);
+  display:flex; min-height:100vh;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Sidebar */
+.sidebar{
+  width:250px; background:var(--panel); border-right:1px solid var(--border);
+  padding:20px 14px; flex-shrink:0;
+}
+.brand{font-size:15px; font-weight:700; letter-spacing:.3px; margin-bottom:2px}
+.brand small{display:block; color:var(--muted); font-weight:400; font-size:11px; margin-top:2px}
+.navgroup{margin-top:22px}
+.navgroup h4{font-size:10.5px; letter-spacing:.08em; color:var(--muted); margin-bottom:6px; padding:0 8px}
+.navitem{
+  display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px;
+  color:var(--muted); font-size:13.5px; cursor:pointer; margin-bottom:2px;
+}
+.navitem:hover{background:var(--panel2); color:var(--text)}
+.navitem.active{background:var(--accent); color:#fff}
+.navitem.new::after{content:"BARU"; font-size:9px; background:var(--green); color:#052; padding:1px 5px; border-radius:4px; margin-left:auto; font-weight:700}
+.sidebar-foot{margin-top:28px; font-size:11px; color:var(--muted); line-height:1.5; padding:0 8px}
+
+/* Main */
+.main{flex:1; min-width:0; display:flex; flex-direction:column}
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 24px; border-bottom:1px solid var(--border);
+  position:sticky; top:env(safe-area-inset-top,0px); background:var(--bg); z-index:5;
+}
+.topbar h1{font-size:18px; font-weight:700}
+.topbar .date{color:var(--muted); font-size:12.5px}
+.refresh{
+  background:var(--panel2); border:1px solid var(--border); color:var(--text);
+  padding:7px 13px; border-radius:8px; font-size:13px; cursor:pointer;
+}
+.refresh:hover{border-color:var(--accent)}
+.content{padding:20px 24px; overflow-x:auto}
+
+.section-block{margin-bottom:26px}
+.section-block h2{font-size:13.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px}
+
+table{width:100%; border-collapse:collapse; background:var(--panel); border-radius:10px; overflow:hidden; font-size:13px}
+th,td{padding:9px 12px; text-align:left; border-bottom:1px solid var(--border)}
+th{background:var(--panel2); color:var(--muted); font-weight:600; font-size:11.5px; text-transform:uppercase; letter-spacing:.03em}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:center}
+.badge{padding:2px 8px; border-radius:20px; font-size:11.5px; font-weight:600}
+.badge.ok{background:rgba(62,207,142,.15); color:var(--green)}
+.badge.warn{background:rgba(245,185,66,.15); color:var(--amber)}
+.badge.empty{background:rgba(139,147,167,.15); color:var(--muted)}
+.status-txt{color:var(--muted); font-size:12.5px}
+
+.loading{color:var(--muted); font-size:13px; padding:6px 0}
+
+@media (prefers-color-scheme: light){
+  :root{--bg:#f4f5f8;--panel:#fff;--panel2:#f0f1f5;--border:#e2e4ea;--text:#1c2029;--muted:#6b7280}
+}
+@media (max-width:760px){
+  body{flex-direction:column}
+  .sidebar{width:100%; border-right:none; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:4px}
+  .navgroup{margin-top:8px}
+  .content{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">Rekap Produksi<small>PPC Tam — Dashboard</small></div>
+
+  <div class="navgroup">
+    <h4>RINGKASAN</h4>
+    <div class="navitem">Overview</div>
+    <div class="navitem">Kalender Harian</div>
+  </div>
+
+  <div class="navgroup">
+    <h4>JADWAL PRODUKSI</h4>
+    <div class="navitem new active">Jadwal Hari Ini</div>
+  </div>
+
+  <div class="navgroup">
+    <h4>REKAP PER KATEGORI</h4>
+    <div class="navitem">Rekap Botol</div>
+    <div class="navitem">Rekap Thermo Cup</div>
+    <div class="navitem">Rekap Thermo Tray &amp; Lid</div>
+    <div class="navitem">Rekap Printing</div>
+    <div class="navitem">Rekap Extruder</div>
+  </div>
+
+  <div class="sidebar-foot">Sumber data: Google Sheets (live).<br>Dibuat untuk lantai produksi.</div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Jadwal Produksi Hari Ini</h1>
+      <div class="date" id="todayLabel">Memuat tanggal…</div>
+    </div>
+    <button class="refresh" onclick="loadJadwal()">⟳ Refresh</button>
+  </div>
+
+  <div class="content">
+    <div class="section-block">
+      <h2>Botol</h2>
+      <div id="tbl-botol" class="loading">Memuat data…</div>
+    </div>
+    <div class="section-block">
+      <h2>Thermo</h2>
+      <div id="tbl-thermo" class="loading">Memuat data…</div>
+    </div>
+    <div class="section-block">
+      <h2>Printing</h2>
+      <div id="tbl-printing" class="loading">Memuat data…</div>
+    </div>
+    <div class="section-block">
+      <h2>Extruder</h2>
+      <div id="tbl-extruder" class="loading">Memuat data…</div>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   GANTI dengan link "Publish to web -> CSV" dari sheet
+   "Data Jadwal Produksi" (bukan link edit biasa).
+   Google Sheets -> File -> Share -> Publish to web -> pilih
+   sheet "Data Jadwal Produksi" -> format CSV -> copy link.
+   ============================================================ */
+const SHEET_CSV_URL = "GANTI_DENGAN_LINK_CSV_PUBLISH_TO_WEB";
+
+const GROUPS = {
+  botol:   ["Mc 1","Mc 2","Mc 3","Mc 4","Mc 5","Mc 6","Mc 7","Mc 8","Mc 9","Mc 10"],
+  thermo:  ["M92","FC 1","FC 2","FC 3","FC 4"],
+  printing:["Polytype"],
+  extruder:["CS (E1)","Dismat (F2)"]
+};
+
+// contoh/mock data dipakai bila SHEET_CSV_URL belum diisi atau fetch gagal
+const MOCK_ROWS = [
+  {tanggal:"2026-09-23", mesin:"Mc 1", tkv:1, kode:"FB-000296", produk:"Jar Cylinder 300 ml", qty:"41 rb pcs", status:"By date"},
+  {tanggal:"2026-09-23", mesin:"Mc 2", tkv:1, kode:"FB-000001", produk:"Jar Cylinder 1000 ml", qty:"175 rb pcs", status:"By date"},
+  {tanggal:"2026-09-23", mesin:"Polytype", tkv:2, kode:"THM-M92", produk:"Cup U-Shape PP D93-22 Oz-11gr (KOPKEN) + Printing Kopi Kenangan (D2)", qty:"-", status:"By date"},
+];
+
+function todayStr(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function parseCSV(text){
+  const lines = text.trim().split("\n").map(l => l.split(",").map(c => c.replace(/^"|"$/g,"").trim()));
+  const headers = lines[0];
+  return lines.slice(1).map(cols => {
+    const o = {};
+    headers.forEach((h,i)=> o[h.toLowerCase()] = cols[i] ?? "");
+    return o;
+  });
+}
+
+async function fetchRows(){
+  if (!SHEET_CSV_URL || SHEET_CSV_URL.startsWith("GANTI_")) return MOCK_ROWS;
+  try{
+    const res = await fetch(SHEET_CSV_URL);
+    const text = await res.text();
+    return parseCSV(text);
+  }catch(e){
+    console.error("Gagal ambil data sheet, pakai contoh:", e);
+    return MOCK_ROWS;
+  }
+}
+
+function statusBadge(row){
+  if (!row) return '<span class="badge empty">Belum ada jadwal</span>';
+  const s = (row.status || "").toLowerCase();
+  if (s.includes("gagal") || s.includes("issue") || s.includes("off"))
+    return `<span class="badge warn">${row.status}</span>`;
+  return `<span class="badge ok">${row.status || "-"}</span>`;
+}
+
+function renderTable(elId, mesinList, rowsByMesin){
+  const rows = mesinList.map(m => {
+    const r = rowsByMesin[m];
+    return `<tr>
+      <td>${m}</td>
+      <td class="num">${r ? r.tkv : "-"}</td>
+      <td>${r ? r.kode : "-"}</td>
+      <td>${r ? r.produk : "-"}</td>
+      <td class="num">${r ? r.qty : "-"}</td>
+      <td>${statusBadge(r)}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById(elId).outerHTML = `
+    <table id="${elId}">
+      <thead><tr>
+        <th>Mesin</th><th class="num">TKV</th><th>Kode Item</th><th>Produk</th><th class="num">QTY</th><th>Status</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function loadJadwal(){
+  document.getElementById("todayLabel").textContent =
+    new Date().toLocaleDateString("id-ID",{weekday:"long", day:"numeric", month:"long", year:"numeric"});
+
+  const rows = await fetchRows();
+  const today = todayStr();
+  const todays = rows.filter(r => (r.tanggal || "").slice(0,10) === today);
+
+  const byMesin = {};
+  todays.forEach(r => byMesin[r.mesin] = r);
+
+  Object.keys(GROUPS).forEach(g => {
+    const id = "tbl-" + g;
+    // rebuild placeholder if a table already replaced it
+    if (!document.getElementById(id)) {
+      const table = document.querySelector(`#tbl-${g}, table[id="tbl-${g}"]`);
+    }
+  });
+
+  renderTable("tbl-botol", GROUPS.botol, byMesin);
+  renderTable("tbl-thermo", GROUPS.thermo, byMesin);
+  renderTable("tbl-printing", GROUPS.printing, byMesin);
+  renderTable("tbl-extruder", GROUPS.extruder, byMesin);
+}
+
+loadJadwal();
+</script>
+</body>
+</html>
